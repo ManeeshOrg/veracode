@@ -58,6 +58,13 @@ jobs:
           echo "Running final cleanup..."
           Remove-Item -Recurse -Force "$env:GITHUB_WORKSPACE\*"
 
+      - name: Install Git LFS
+        if: contains(runner.os, 'Linux')
+        run: |
+          apt-get update
+          apt-get install -y git-lfs
+          git lfs install
+
       - uses: actions/checkout@v6
         with:
           repository: ${{ github.event.client_payload.repository.full_name }}
