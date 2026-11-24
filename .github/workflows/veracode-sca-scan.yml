@@ -195,6 +195,21 @@ jobs:
           sparse-checkout: |
             helper/cli/*
 
+      - name: Debug - Verify CLI binary
+        run: |
+          echo "=== Checking CLI files ==="
+          ls -lh veracode-helper/helper/cli/
+          echo "=== Checking file type ==="
+          file veracode-helper/helper/cli/veracode-cli_2.57.2_linux_x86.tar.gz
+          echo "=== Extracting and testing ==="
+          mkdir -p /tmp/test-extract
+          cd /tmp/test-extract
+          tar -xzf $GITHUB_WORKSPACE/veracode-helper/helper/cli/veracode-cli_2.57.2_linux_x86.tar.gz
+          ls -lh
+          file veracode
+          echo "=== Attempting to run binary ==="
+          ./veracode --version || echo "Binary execution failed with exit code $?"
+
       - name: Run Veracode SCA
         env:
           SRCCLR_API_TOKEN: ${{ secrets.VERACODE_AGENT_TOKEN }}
