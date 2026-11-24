@@ -206,13 +206,13 @@ jobs:
         run: |
           echo "=== Pre-extracting CLI binary ==="
           cd veracode-helper/helper/cli
-          tar -xzf veracode-cli_2.57.2_linux_x86.tar.gz -C .
-          mkdir -p veracode-cli_2.57.2_linux_x86
-          mv veracode veracode-cli_2.57.2_linux_x86/
-          ls -lah veracode-cli_2.57.2_linux_x86/
-          file veracode-cli_2.57.2_linux_x86/veracode
+          tar -xzf veracode-cli_2.57.3_linux_x86.tar.gz -C .
+          mkdir -p veracode-cli_2.57.3_linux_x86
+          mv veracode veracode-cli_2.57.3_linux_x86/
+          ls -lah veracode-cli_2.57.3_linux_x86/
+          file veracode-cli_2.57.3_linux_x86/veracode
           echo "=== Testing binary ==="
-          ./veracode-cli_2.57.2_linux_x86/veracode version || echo "Test run exit code: $?"
+          ./veracode-cli_2.57.3_linux_x86/veracode version || echo "Test run exit code: $?"
 
       - name: Run Veracode SCA
         env:
