@@ -60,9 +60,15 @@ jobs:
       VERACODE_API_KEY_SECRET: '${{ secrets.VERACODE_API_KEY }}'
 
     steps:
+      - name: Install git-lfs
+        run: |
+          apt-get update
+          apt-get install -y git-lfs
+          git lfs install
       - uses: actions/checkout@v6
         with:
           path: 'veracode-helper'
+          lfs: true
 
       - uses: actions/checkout@v6
         with:
@@ -91,11 +97,23 @@ jobs:
           echo "working_dir=$working_path" >> "$GITHUB_OUTPUT"
 
           cd veracode-helper/helper/cli
-          cliFile=$(ls -1vr *.tar.gz | head -n 1)
-          cliFileName=$(echo "$cliFile" | cut -c 1-$((${#cliFile}-7)))
-          tar -zxvf $cliFile
-          cd $cliFileName
-          export PATH="veracode-helper/helper/cli/$cliFileName:$PATH"
+          cliFile=$(ls -1vr *.tar.gz 2>/dev/null | head -n 1)
+          if [[ -z "$cliFile" ]]; then
+            echo "Error: No .tar.gz file found in helper/cli directory"
+            ls -la
+            exit 1
+          fi
+          echo "Found CLI file: $cliFile"
+          file "$cliFile"
+          tar -zxvf "$cliFile"
+          cliPath=$(find . -type f -name "veracode" -print -quit)
+          if [[ -z "$cliPath" ]]; then
+            echo "Error: veracode was not found in the extracted archive"
+            exit 1
+          fi
+          cliPath=$(dirname "$cliPath")
+          cd "$cliPath"
+          export PATH="$(pwd):$PATH"
           cd $working_path
 
           if [[ "${{ inputs.event_name }}" == *"ruby"* ]]; then
@@ -143,9 +161,15 @@ jobs:
       VERACODE_API_KEY_SECRET: '${{ secrets.VERACODE_API_KEY }}'
 
     steps:
+      - name: Install git-lfs
+        run: |
+          apt-get update
+          apt-get install -y git-lfs
+          git lfs install
       - uses: actions/checkout@v6
         with:
           path: 'veracode-helper'
+          # lfs: true
 
       - uses: actions/checkout@v6
         with:
