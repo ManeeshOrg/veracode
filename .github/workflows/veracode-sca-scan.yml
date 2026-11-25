@@ -206,13 +206,20 @@ jobs:
         run: |
           echo "=== Pre-extracting CLI binary ==="
           cd veracode-helper/helper/cli
-          tar -xzf veracode-cli_2.57.3_linux_x86.tar.gz -C .
-          mkdir -p veracode-cli_2.57.3_linux_x86
-          mv veracode veracode-cli_2.57.3_linux_x86/
-          ls -lah veracode-cli_2.57.3_linux_x86/
-          file veracode-cli_2.57.3_linux_x86/veracode
+          cliFile=$(ls -1 veracode-cli_*_linux_x86.tar.gz 2>/dev/null | head -n 1)
+          if [[ -z "$cliFile" ]]; then
+            echo "Error: No Linux CLI tar.gz file found"
+            exit 1
+          fi
+          echo "Found CLI file: $cliFile"
+          extractDir="${cliFile%.tar.gz}"
+          tar -xzf "$cliFile" -C .
+          mkdir -p "$extractDir"
+          mv veracode "$extractDir/"
+          ls -lah "$extractDir/"
+          file "$extractDir/veracode"
           echo "=== Testing binary ==="
-          ./veracode-cli_2.57.3_linux_x86/veracode version || echo "Test run exit code: $?"
+          ./"$extractDir"/veracode version || echo "Test run exit code: $?"
 
       - name: Run Veracode SCA
         env:
